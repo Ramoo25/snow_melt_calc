@@ -78,6 +78,11 @@ for col, w in widths.items():
 # ---------------- заголовок ----------------
 put(2, 2, "РАСЧЁТ СИСТЕМЫ СНЕГОТАЯНИЯ", font=F_TITLE)
 put(3, 2, "snow_melt_new.xlsx — рабочая точка насоса и средняя длина петли", font=F_BOLD)
+# без переноса по словам и с фиксированной высотой — иначе Excel раздувает строки
+for r in (2, 3):
+    ws.cell(row=r, column=2).alignment = Alignment(horizontal="left", vertical="center", wrap_text=False)
+ws.row_dimensions[2].height = 20
+ws.row_dimensions[3].height = 16
 
 # ================= 1. ИСХОДНЫЕ ДАННЫЕ =================
 section(5, "1. ИСХОДНЫЕ ДАННЫЕ")
@@ -371,6 +376,11 @@ wsc = wb.create_sheet("Насосы-кривые")
 ws = wsc  # put()/section() пишут в глобальный ws — переключаем на лист каталога
 put(1, 2, "КАТАЛОЖНЫЕ ХАРАКТЕРИСТИКИ НАСОСОВ H(Q)", font=F_TITLE)
 put(2, 2, "Значения — справочные аппроксимации каталожных кривых по узловым точкам. Уточняйте по паспорту насоса.", font=F_NOTE)
+# без переноса и с фиксированной высотой заголовочных строк
+for r in (1, 2):
+    wsc.cell(row=r, column=2).alignment = Alignment(horizontal="left", vertical="center", wrap_text=False)
+wsc.row_dimensions[1].height = 20
+wsc.row_dimensions[2].height = 16
 
 prs = [
     "Grundfos UPS 25-20",
