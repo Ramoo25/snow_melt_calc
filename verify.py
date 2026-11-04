@@ -188,6 +188,7 @@ checks = [
     ("сетка Q в B151", ws.cell(row=151, column=2).value == 3.0 or abs(ws.cell(row=151, column=2).value - 3.0) < 1e-9),
     ("Hнас в F127 (IF-интерп.)", str(ws.cell(row=127, column=6).value).startswith("=IF(")),
     ("итог Lср H167", ws["H167"].value == "=H108"),
+    ("закрепление шапки (freeze A16)", ws.freeze_panes == "A16"),
 ]
 ok = True
 for name, cond in checks:
