@@ -1,0 +1,13 @@
+# Служебные файлы Excel/Office
+~$*
+*.tmp
+.~lock.*#
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS
+Thumbs.db
+.DS_Store
