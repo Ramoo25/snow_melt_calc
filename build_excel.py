@@ -71,7 +71,7 @@ def section(row, text):
     ws.cell(row=row, column=2).value = text
 
 # ---------------- ширины ----------------
-widths = {1: 2, 2: 4, 3: 46, 4: 3, 5: 3, 6: 8, 7: 2, 8: 12, 9: 2, 10: 10, 11: 2, 12: 62}
+widths = {1: 2, 2: 8, 3: 46, 4: 10, 5: 10, 6: 8, 7: 8, 8: 12, 9: 2, 10: 10, 11: 2, 12: 62}
 for col, w in widths.items():
     ws.column_dimensions[get_column_letter(col)].width = w
 
@@ -150,7 +150,9 @@ param(47, 6, "Коэффициент излучения чёрного тела"
 param(48, 7, "Коэффициент теплоотдачи на внутренней поверхности трубы", "αв", 11.5, "Вт/(м²·К)", "", FILL_CONST)
 param(49, 8, "Коэффициент теплоотдачи наружной поверхности", "αн", "=8.7+2.6*H12", "Вт/(м²·К)", "αн = 8,7 + 2,6·vн", FILL_CONST, formula=True)
 
-put(50, 3, "Гидравлика — местные сопротивления и магистраль (СЕЙЧАС НЕ УЧАСТВУЮТ в расчёте, зарезервировано)", font=F_SECTION)
+put(50, 3, "Гидравлика — местные сопротивления и магистраль", font=F_SECTION)
+ws.cell(row=50, column=3).alignment = Alignment(horizontal="left", vertical="center", wrap_text=False)
+ws.cell(row=50, column=12, value="сейчас не участвуют в расчёте, зарезервировано").font = F_NOTE
 param(51, 1, "Кран шаровой (kvs)", "", 6, "—", "решение: kvs = 6", FILL_CONST, "0.0")
 param(52, 2, "Количество кранов", "", 5, "шт", "", FILL_CONST, "0")
 param(53, 3, "Фильтр-сетка (kvs)", "", 3.84, "—", "", FILL_CONST)
@@ -242,24 +244,34 @@ for col in range(2, 13):
     ws.cell(row=115, column=col).fill = FILL_SEC
     ws.cell(row=115, column=col).font = F_SECTION
 put(116, 3, "Схема: насос → подающий коллектор (без сопротивления) → петли → обратный коллектор → магистраль (пренебрежимо) → котёл. В расчёте — только потери по длине петли.", font=F_NOTE)
+# заголовки секции/подписи — без переноса и с фиксированной высотой (иначе Excel раздувает строки)
+for r in (115, 116):
+    ws.cell(row=r, column=3).alignment = Alignment(horizontal="left", vertical="center", wrap_text=False)
+ws.row_dimensions[115].height = 18
+ws.row_dimensions[116].height = 16
+ws.cell(row=115, column=2).alignment = Alignment(horizontal="left", vertical="center", wrap_text=False)
 
 CAT = "'Насосы-кривые'"
 knots = ['$C$122', '$D$122', '$E$122', '$F$122', '$G$122', '$H$122', '$I$122']   # x0..x6
 pvals = ['$C$123', '$D$123', '$E$123', '$F$123', '$G$123', '$H$123', '$I$123']   # h0..h6
 
-put(122, 2, "Узлы каталожных точек Q, м³/ч:", font=F_BOLD)
+put(120, 3, "Строка 122 — узлы каталожных точек Q, м³/ч;  строка 123 — напор H выбранного насоса, м:", font=F_BOLD)
+ws.cell(row=120, column=3).alignment = Alignment(horizontal="left", vertical="center", wrap_text=False)
+ws.row_dimensions[120].height = 16
 for j, kx in enumerate([0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0]):
     put(122, 3 + j, kx, font=F_BOLD, num="0.0", align=AL_C)
-put(123, 2, "Напор H выбранного насоса, м:", font=F_BOLD)
 for k in range(1, 8):
     f = "=INDEX({}!$B$4:$G$10,{},MATCH($H$15,{}!$B$3:$G$3,0))".format(CAT, k, CAT)
     put(123, 2 + k, f, num="0.00", align=AL_C)
 
 # заголовок таблицы РТ — упрощённая схема: только потери по длине в петлях
 hdr = ["Q, м³/ч", "v петли, м/с", "ΔP длина петли, Па", "H сети, м", "H насоса, м", "Δ = Hнас − Hсети"]
-put(125, 2, "Таблица характеристик (Q — общий расход; схема: насос → коллектор → петли → магистраль → котёл, все узлы кроме петель — без сопротивления):", font=F_BOLD)
+put(125, 3, "Таблица характеристик (Q — общий расход; схема: насос → коллектор → петли → магистраль → котёл, все узлы кроме петель — без сопротивления):", font=F_BOLD)
+ws.cell(row=125, column=3).alignment = Alignment(horizontal="left", vertical="center", wrap_text=False)
+ws.row_dimensions[125].height = 16
 for j, h in enumerate(hdr):
     put(126, 2 + j, h, font=F_BOLD, align=AL_C, border=True, fill=FILL_SEC)
+ws.row_dimensions[126].height = 30   # фиксируем: заголовки в 2 строки, без автоувеличения
 
 REF_I = "$H$106"     # количество петель
 REF_L = "$H$108"     # средняя длина петли
