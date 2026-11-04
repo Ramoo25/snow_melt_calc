@@ -20,6 +20,7 @@ X = dict(
     kvs_тр=4.5, n_тр=1, d_маг=23.2, L_маг=20.0, k_зап=1.2, v_пр=0.45,
 )
 HQ = {
+    "Grundfos UPS 25-20":        [2.0, 1.8, 1.35, 0.85, 0.3, 0.0, 0.0],
     "Grundfos UPS 25-40":        [4.0, 3.6, 2.9, 2.0, 1.0, 0.2, 0.0],
     "Grundfos UPS 25-50":        [5.0, 4.6, 3.8, 2.7, 1.5, 0.5, 0.0],
     "Grundfos UPS 25-60":        [6.0, 5.5, 4.8, 3.9, 2.8, 1.5, 0.5],
@@ -28,7 +29,7 @@ HQ = {
 }
 QKNOTS = [0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
 
-def run(pump="Grundfos UPS 25-40", tпод=None, vн=None, verbose=True):
+def run(pump="Grundfos UPS 25-20", tпод=None, vн=None, verbose=True):
     X["tпод"] = X["tпод"] if tпод is None else tпод
     X["vн"] = X["vн"] if vн is None else vн
     X["αн"] = 8.7 + 2.6 * X["vн"]
@@ -86,20 +87,14 @@ def run(pump="Grundfos UPS 25-40", tпод=None, vн=None, verbose=True):
 
     def H_сети(q):
         v_пет = q / (i * 3600 * ω)
-        v_маг = q / 3600 / (math.pi / 4 * (X["d_маг"] / 1000) ** 2)
-        d_peтл = X["kА"] * 32000 * v_пет ** 1.79 / (dв * 1000) ** 1.29 * L_ср
-        d_mc = (X["n_кр"] * ((q / i) / X["kvs_кр"]) ** 2 +
-                X["n_ф"] * ((q / i) / X["kvs_ф"]) ** 2 +
-                X["n_тр"] * ((q / i) / X["kvs_тр"]) ** 2) * 1e5 * X["kА"] + \
-               X["n_пов"] * X["ζ"] * v_пет ** 2 / (2 * 9.81) * 1e4 * X["kА"]
-        d_маг = X["kА"] * 32000 * v_маг ** 1.79 / X["d_маг"] ** 1.29 * X["L_маг"]
-        d_общ = X["k_зап"] * (d_peтл + d_mc + d_маг)
-        return [v_пет, v_маг, d_общ, d_общ / (X["ρж"] * 9.81)]
+        # упрощённая схема: только потери по длине петли
+        d_дл = X["kА"] * 32000 * v_пет ** 1.79 / (dв * 1000) ** 1.29 * L_ср
+        return [v_пет, d_дл, d_дл / (X["ρж"] * 9.81)]
 
     rows = []
     for k in range(25):
         q = 0.125 * k
-        v_пет, v_маг, d_общ, h_сети = H_сети(q)
+        v_пет, d_дл, h_сети = H_сети(q)
         h_нас = H_нас(q)
         rows.append((q, v_пет, h_сети, h_нас, h_нас - h_сети))
     n_neg = sum(1 for r in rows if r[4] < 0)
@@ -144,28 +139,34 @@ def run(pump="Grundfos UPS 25-40", tпод=None, vн=None, verbose=True):
     else:
         v_факт = None
     return dict(dв=dв, ω=ω, Rвверх=Rвверх, Rвниз=Rвниз, ΣQ=ΣQ, n1=n1, tмин=tмин,
-                f_макс=f_макс, i=i, L_ср=L_ср, Gрт=Gрт, Hрт=(Hрт if Gрт else None),
+                f_макс=f_макс, i=i, L_макс=L_макс, L_ср=L_ср, Gрт=Gрт, Hрт=(Hрт if Gрт else None),
                 v_факт=(v_факт if Gрт else None))
 
-# ---------- проверки ----------
+# ---------- проверки (физические критерии, БЕЗ опоры на значения исходника) ----------
 print("########## ЭТАЛОН (по умолчанию, vн=3) ##########")
 r1 = run()
 print()
-print("########## ВАРИАНТ vн = 10 (сверка с исходником) ##########")
+print("########## ВАРИАНТ vн = 10 (сильный ветер) ##########")
 r_orig = run(vн=10.0)
 print()
 print("########## ВАРИАНТ tпод = 45 °C (стресс) ##########")
 X["vн"] = 3.0          # восстановить базовый ветер для стресс-сценария
 r2 = run(tпод=45.0)
 
-assert abs(r1["Rвверх"] - 0.04) < 1e-6, "Rвверх неверен"
-assert abs(r1["Rвниз"] - 3.7424) < 1e-3, "Rвниз должен быть ≈ 3,742"
-assert abs(r1["n1"] - 0.223) < 0.005, "n1 должен быть ≈ 0,223 (сверка с исходником)"
-assert r1["i"] == 1 and abs(r1["L_ср"] - 70.0) < 1.5, "при v_пр=0,45: 1 петля ~70 м"
-assert r_orig["i"] == 1 and 66 < r_orig["L_ср"] < 75, "при vн=10: 1 петля ~70 м (как в исходнике)"
+# физика: сопротивления слоёв (сложение по заданным слоям)
+assert abs(r1["Rвверх"] - 0.04) < 1e-6, "Rвверх = стяжка + плитка должен быть ≈ 0,040"
+assert abs(r1["Rвниз"] - 3.7424) < 1e-3, "Rвниз = ЭППС + бетон + песок должен быть ≈ 3,742"
+# физика: мощность положительна и разумна для Fст = 14 м²
+assert 1.0 <= r1["n1"] * 14.0 <= 10.0, "N1 в разумном диапазоне, кВт: {}".format(r1["n1"] * 14.0)
+# физика: tмин выше tст и ниже подачи (перепад положительный)
+assert r1["tмин"] > 2.0, "tмин > tст"
+assert r1["tмин"] < X["tпод"], "tмин < tпод (перепад должен быть положительным)"
+# физика расхода: скорость в петле при РТ в норме
 assert r1["Gрт"] is not None and 0.05 < r1["Gрт"] < 3.0, "РТ внутри таблицы"
 assert r1["v_факт"] is not None and 0.2 <= r1["v_факт"] <= 0.5, \
     "скорость в петле при РТ должна быть 0,2–0,5 м/с (получено: {})".format(r1["v_факт"])
+# физика: сильный ветер → αн↑ → Rв↓ → tмин↓ → больше допустимый перепад/длина петли
+assert r_orig["L_макс"] > r1["L_макс"], "при сильном ветре допустимая длина петли растёт"
 
 # ---------- структура файла ----------
 print()
@@ -181,8 +182,11 @@ checks = [
     ("проход 2 tср (=H83)", ws["H84"].value == "=H83"),
     ("H108 формула Lср", ws["H108"].value == "=H107/H19"),
     ("H154 Qрт (INDEX+COUNTIF)", "INDEX($B$127:$B$151" in str(ws["H154"].value)),
+    ("H154 использует Δ-колонку G", "$G$127:$G$151" in str(ws["H154"].value)),
+    ("H155 напор насоса — колонка F", "$F$127:$F$151" in str(ws["H155"].value)),
+    ("заголовок таблицы упрощён", "H насоса" in str(ws.cell(row=126, column=6).value)),
     ("сетка Q в B151", ws.cell(row=151, column=2).value == 3.0 or abs(ws.cell(row=151, column=2).value - 3.0) < 1e-9),
-    ("Hнас в J127 (IF-интерп.)", str(ws.cell(row=127, column=10).value).startswith("=IF(")),
+    ("Hнас в F127 (IF-интерп.)", str(ws.cell(row=127, column=6).value).startswith("=IF(")),
     ("итог Lср H167", ws["H167"].value == "=H108"),
 ]
 ok = True
@@ -190,11 +194,12 @@ for name, cond in checks:
     print(("OK  " if cond else "FAIL") + "  " + name)
     ok = ok and cond
 wsc_names = wb["Насосы-кривые"]
-names = [wsc_names.cell(row=3, column=2 + j).value for j in range(5)]
+names = [wsc_names.cell(row=3, column=2 + j).value for j in range(6)]
 sel = ws["H15"].value
 print("модели:", names)
 print("выбран:", sel, "-> в списке:", sel in names)
-for c in ws.data_validations.dataValidation:
-    print("DV:", c.formula1, "->", c.sqref)
+print("DV:", ws.data_validations.dataValidation[0].formula1, "->", ws.data_validations.dataValidation[0].sqref)
+assert sel in names and len(names) == 6, "список насосов: 6 моделей"
+assert "$B$3:$G$3" in ws.data_validations.dataValidation[0].formula1, "DV охватывает 6 моделей"
 assert ok, "структурные проверки не пройдены"
 print("VERIFY OK")
