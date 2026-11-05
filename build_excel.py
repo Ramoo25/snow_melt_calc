@@ -153,131 +153,117 @@ param(47, 6, "Коэффициент излучения чёрного тела"
 param(48, 7, "Коэффициент теплоотдачи на внутренней поверхности трубы", "αв", 11.5, "Вт/(м²·К)", "", FILL_CONST)
 param(49, 8, "Коэффициент теплоотдачи наружной поверхности", "αн", "=8.7+2.6*H12", "Вт/(м²·К)", "αн = 8,7 + 2,6·vн", FILL_CONST, formula=True)
 
-put(50, 3, "Гидравлика — местные сопротивления и магистраль", font=F_SECTION)
-ws.cell(row=50, column=3).alignment = Alignment(horizontal="left", vertical="center", wrap_text=False)
-ws.cell(row=50, column=12, value="сейчас не участвуют в расчёте, зарезервировано").font = F_NOTE
-param(51, 1, "Кран шаровой (kvs)", "", 6, "—", "решение: kvs = 6", FILL_CONST, "0.0")
-param(52, 2, "Количество кранов", "", 5, "шт", "", FILL_CONST, "0")
-param(53, 3, "Фильтр-сетка (kvs)", "", 3.84, "—", "", FILL_CONST)
-param(54, 4, "Количество фильтров", "", 1, "шт", "", FILL_CONST, "0")
-param(55, 5, "Резкий поворот (ζ)", "", 1, "—", "", FILL_CONST, "0.0")
-param(56, 6, "Количество поворотов", "", 6, "шт", "", FILL_CONST, "0")
-param(57, 7, "Трёхходовик (kvs)", "", 4.5, "—", "", FILL_CONST)
-param(58, 8, "Количество трёхходовиков", "", 1, "шт", "", FILL_CONST, "0")
-param(59, 9, "Внутренний диаметр магистрали", "", 23.2, "мм", "не используется (магистраль пренебрежимо мала)", FILL_CONST)
-param(60, 10, "Длина магистрали (подача + обратка)", "", 20, "м", "не используется", FILL_CONST, "0.0")
-param(61, 11, "Коэффициент запаса (коллекторы и пр.)", "", 1.2, "—", "в текущей упрощённой схеме не используется (подключение напрямую в коллектор)", FILL_CONST)
-param(62, 12, "Проектная скорость в петле", "vпр", 0.45, "м/с", "параметр компоновки (норма 0,2–0,5 м/с)", FILL_CONST)
+param(50, 12, "Проектная скорость в петле", "vпр", 0.45, "м/с", "параметр компоновки (норма 0,2–0,5 м/с); краны/фильтр/повороты/трёхходовик/магистраль/запас исключены из файла", FILL_CONST)
 
 # ================= 3. ТЕПЛОВОЙ БАЛАНС (на 1 м² поверхности) =================
-section(64, "3. ТЕПЛОВОЙ БАЛАНС — на 1 м² обогреваемой поверхности (шаги 1–5 исходника)")
-put(65, 3, "Составляющая", font=F_BOLD)
-put(65, 8, "Значение", font=F_BOLD, align=AL_C)
-put(65, 10, "Ед.", font=F_BOLD)
-put(65, 12, "Формула", font=F_BOLD)
+section(53, "3. ТЕПЛОВОЙ БАЛАНС — на 1 м² обогреваемой поверхности (шаги 1–5 исходника)")
+put(54, 3, "Составляющая", font=F_BOLD)
+put(54, 8, "Значение", font=F_BOLD, align=AL_C)
+put(54, 10, "Ед.", font=F_BOLD)
+put(54, 12, "Формула", font=F_BOLD)
 
-param(66, 1, "Нагрев льда от tв до 0 °C", "Q1", "=H10/1000*H42*H43*(0-H7)", "кДж/м²", "h·ρл·сл·(0−tв)", None, NUM2, formula=True)
-param(67, 2, "Таяние льда", "Q2", "=H10/1000*H42*H44", "кДж/м²", "h·ρл·λл", None, NUM2, formula=True)
-param(68, 3, "Нагрев талой воды от 0 до tст", "Q3", "=H10/1000*H42*H45*(H9-0)", "кДж/м²", "h·ρл·св·tст", None, NUM2, formula=True)
-param(69, 4, "Потери тепла излучением", "Qизл", "=3600*H46*H47*POWER((0+273)/100,4)/1000", "кДж/м²", "3600·ε·Co·(273/100)⁴/1000 — от поверхности при 0 °C, за 1 РАСЧЁТНЫЙ ЧАС (не зависит от tст)", None, NUM2, formula=True)
-param(70, 5, "Коэффициент теплоотдачи при конвекции", "αк", "=H49", "Вт/(м²·К)", "решение (вариант 2): конвекция привязана к ветру — тот же αн = 8,7 + 2,6·vн, что и в Rв", None, NUM2, formula=True)
-param(71, 6, "Потери тепла конвекцией", "Qкон", "=3600*H70*(0-H7)/1000", "кДж/м²", "3600·αн·(0−tв)/1000 — потери за 1 РАСЧЁТНЫЙ ЧАС (при τ ≠ 60 мин полный масштаб ×τ/60 — см. Справка, п. 8)", None, NUM2, formula=True)
-param(72, 7, "Суммарные затраты тепла", "ΣQ", "=H66+H67+H68+H69+H71", "кДж/м²", "Q1+Q2+Q3+Qизл+Qкон", None, NUM2, formula=True)
+param(55, 1, "Нагрев льда от tв до 0 °C", "Q1", "=H10/1000*H42*H43*(0-H7)", "кДж/м²", "h·ρл·сл·(0−tв)", None, NUM2, formula=True)
+param(56, 2, "Таяние льда", "Q2", "=H10/1000*H42*H44", "кДж/м²", "h·ρл·λл", None, NUM2, formula=True)
+param(57, 3, "Нагрев талой воды от 0 до tст", "Q3", "=H10/1000*H42*H45*(H9-0)", "кДж/м²", "h·ρл·св·tст", None, NUM2, formula=True)
+param(58, 4, "Потери тепла излучением", "Qизл", "=3600*H46*H47*POWER((0+273)/100,4)/1000", "кДж/м²", "3600·ε·Co·(273/100)⁴/1000 — от поверхности при 0 °C, за 1 РАСЧЁТНЫЙ ЧАС (не зависит от tст)", None, NUM2, formula=True)
+param(59, 5, "Коэффициент теплоотдачи при конвекции", "αк", "=H49", "Вт/(м²·К)", "решение (вариант 2): конвекция привязана к ветру — тот же αн = 8,7 + 2,6·vн, что и в Rв", None, NUM2, formula=True)
+param(60, 6, "Потери тепла конвекцией", "Qкон", "=3600*H59*(0-H7)/1000", "кДж/м²", "3600·αн·(0−tв)/1000 — потери за 1 РАСЧЁТНЫЙ ЧАС (при τ ≠ 60 мин полный масштаб ×τ/60 — см. Справка, п. 8)", None, NUM2, formula=True)
+param(61, 7, "Суммарные затраты тепла", "ΣQ", "=H55+H56+H57+H58+H60", "кДж/м²", "Q1+Q2+Q3+Qизл+Qкон", None, NUM2, formula=True)
 
 # ================= 4. ПРИВЕДЕННОЕ СОПРОТИВЛЕНИЕ =================
-section(74, "4. ПРИВЕДЕННОЕ СОПРОТИВЛЕНИЕ «от теплоносителя до поверхности» (шаг 11)")
-param(75, 1, "Приведенное сопротивление", "Rв", "=1/H48+H34+1/H49+H21/H24", "м²·К/Вт", "1/αв + Rвверх + 1/αн + s/λтр", None, "0.0000", formula=True)
+section(63, "4. ПРИВЕДЕННОЕ СОПРОТИВЛЕНИЕ «от теплоносителя до поверхности» (шаг 11)")
+param(64, 1, "Приведенное сопротивление", "Rв", "=1/H48+H34+1/H49+H21/H24", "м²·К/Вт", "1/αв + Rвверх + 1/αн + s/λтр", None, "0.0000", formula=True)
 
 # ================= 5. РАСЧЁТ ПРОХОДАМИ (tср вычисляется) =================
-section(77, "5. РАСЧЁТ ПРОХОДАМИ — средняя температура теплоносителя вычисляется (решение п. 8.5)")
-put(78, 3, "Каждый проход: tср → η → n1 → tмин → новое tср. Проход 1 стартует с грубой оценки.", font=F_NOTE)
+section(66, "5. РАСЧЁТ ПРОХОДАМИ — средняя температура теплоносителя вычисляется (решение п. 8.5)")
+put(67, 3, "Каждый проход: tср → η → n1 → tмин → новое tср. Проход 1 стартует с грубой оценки.", font=F_NOTE)
 
 def eta_formula(t_ref):
     return "=(({t}-H7)*H35)/((({t}-H7)*H35)+(({t}-H8)*H34))".format(t=t_ref)
 
 # Проход 1: строки 79-83
-param(79, "П1", "Средняя температура (оценка)", "tср₁", "=(H11+H9)/2", "°C", "начальная оценка: (tпод + tст)/2", None, NUM2, formula=True)
-param(80, "П1", "КПД (доля тепла вверх)", "η₁", eta_formula("H79"), "—", "шаг 6 исходника", None, "0.0000", formula=True)
-param(81, "П1", "Удельная мощность", "n1₁", "=H72/(H80*H14*60)", "кВт/м²", "шаг 7: ΣQ/(η·τ), τ в с", None, NUM3, formula=True)
-param(82, "П1", "Минимальная температура в петле", "tмин₁", "=1000*H81*H75+H9", "°C", "шаг 11: 1000·n1·Rв + tст", None, NUM2, formula=True)
-param(83, "П1", "Новое среднее значение", "tср₂", "=(H11+H82)/2", "°C", "(tпод + tмин)/2", None, NUM2, formula=True)
+param(68, "П1", "Средняя температура (оценка)", "tср₁", "=(H11+H9)/2", "°C", "начальная оценка: (tпод + tст)/2", None, NUM2, formula=True)
+param(69, "П1", "КПД (доля тепла вверх)", "η₁", eta_formula("H68"), "—", "шаг 6 исходника", None, "0.0000", formula=True)
+param(70, "П1", "Удельная мощность", "n1₁", "=H61/(H69*H14*60)", "кВт/м²", "шаг 7: ΣQ/(η·τ), τ в с", None, NUM3, formula=True)
+param(71, "П1", "Минимальная температура в петле", "tмин₁", "=1000*H70*H64+H9", "°C", "шаг 11: 1000·n1·Rв + tст", None, NUM2, formula=True)
+param(72, "П1", "Новое среднее значение", "tср₂", "=(H11+H71)/2", "°C", "(tпод + tмин)/2", None, NUM2, formula=True)
 
 # Проход 2: строки 84-88
-param(84, "П2", "Средняя температура", "tср₂", "=H83", "°C", "", None, NUM2, formula=True)
-param(85, "П2", "КПД (доля тепла вверх)", "η₂", eta_formula("H84"), "—", "", None, "0.0000", formula=True)
-param(86, "П2", "Удельная мощность", "n1₂", "=H72/(H85*H14*60)", "кВт/м²", "", None, NUM3, formula=True)
-param(87, "П2", "Минимальная температура в петле", "tмин₂", "=1000*H86*H75+H9", "°C", "", None, NUM2, formula=True)
-param(88, "П2", "Новое среднее значение", "tср₃", "=(H11+H87)/2", "°C", "", None, NUM2, formula=True)
+param(73, "П2", "Средняя температура", "tср₂", "=H72", "°C", "", None, NUM2, formula=True)
+param(74, "П2", "КПД (доля тепла вверх)", "η₂", eta_formula("H73"), "—", "", None, "0.0000", formula=True)
+param(75, "П2", "Удельная мощность", "n1₂", "=H61/(H74*H14*60)", "кВт/м²", "", None, NUM3, formula=True)
+param(76, "П2", "Минимальная температура в петле", "tмин₂", "=1000*H75*H64+H9", "°C", "", None, NUM2, formula=True)
+param(77, "П2", "Новое среднее значение", "tср₃", "=(H11+H76)/2", "°C", "", None, NUM2, formula=True)
 
 # Проход 3 (окончательный): строки 89-93
-param(89, "П3", "Средняя температура", "tср₃", "=H88", "°C", "", None, NUM2, formula=True)
-param(90, "П3", "КПД (доля тепла вверх)", "η₃", eta_formula("H89"), "—", "", None, "0.0000", formula=True)
-param(91, "П3", "Удельная мощность (расчётная)", "n1₃", "=H72/(H90*H14*60)", "кВт/м²", "", None, NUM3, formula=True)
-param(92, "П3", "Минимальная температура в петле", "tмин₃", "=1000*H91*H75+H9", "°C", "в конце предельной петли", None, NUM2, formula=True)
-param(93, "П3", "Контрольное новое среднее", "tср₄", "=(H11+H92)/2", "°C", "сходимость |Δtср| < 0,1 °C", None, NUM2, formula=True)
+param(78, "П3", "Средняя температура", "tср₃", "=H77", "°C", "", None, NUM2, formula=True)
+param(79, "П3", "КПД (доля тепла вверх)", "η₃", eta_formula("H78"), "—", "", None, "0.0000", formula=True)
+param(80, "П3", "Удельная мощность (расчётная)", "n1₃", "=H61/(H79*H14*60)", "кВт/м²", "", None, NUM3, formula=True)
+param(81, "П3", "Минимальная температура в петле", "tмин₃", "=1000*H80*H64+H9", "°C", "в конце предельной петли", None, NUM2, formula=True)
+param(82, "П3", "Контрольное новое среднее", "tср₄", "=(H11+H81)/2", "°C", "сходимость |Δtср| < 0,1 °C", None, NUM2, formula=True)
 
 # ================= 6. РЕЗУЛЬТАТЫ ТЕПЛОВОГО РАСЧЁТА =================
-section(95, "6. ПЕТЛИ И РАСХОД (шаги 8–19)")
-param(96, 1, "Средняя температура теплоносителя", "tср", "=H89", "°C", "из прохода 3", None, NUM2, formula=True)
-param(97, 2, "КПД", "η", "=H90", "—", "", None, "0.0000", formula=True)
-param(98, 3, "Удельная мощность", "n1", "=H91", "кВт/м²", "", None, NUM3, formula=True)
-param(99, 4, "Суммарная мощность", "N1", "=H13*H98", "кВт", "n1·Fст", None, NUM3, formula=True)
-param(100, 5, "Минимальная температура в петле", "tмин", "=H92", "°C", "нижний предел теплоносителя", None, NUM2, formula=True)
-param(101, 6, "Допустимый перепад по петле", "tдоп", "=H11-H100", "К", "tпод − tмин (коллектор рядом с петлями)", None, NUM2, formula=True)
-param(102, 7, "Падение температуры на 1 м трубы", "Δt", "=H98*H19/(H62*H23*H37*H38)", "К/м", "b·n1/(vпр·ω·ρж·cж)", None, NUM3, formula=True)
-param(103, 8, "Падение температуры на 1 м² поверхности", "t1", "=H102/H19", "К/м²", "Δt/b", None, NUM3, formula=True)
-param(104, 9, "Максимальная площадь петли", "fст", "=H101/H103", "м²", "tдоп/t1", None, NUM2, formula=True)
-param(105, 10, "Максимальная длина петли", "Lмакс", "=H104/H19", "м", "fст/b", None, NUM2, formula=True)
-param(106, 11, "Количество петель", "i", "=ROUNDUP(H13/H104,0)", "шт", "ROUNDUP(Fст/fст)", None, "0", formula=True)
-param(107, 12, "Фактическая площадь петли", "f", "=H13/H106", "м²", "Fст/i", None, NUM2, formula=True)
-param(108, 13, "СРЕДНЯЯ ДЛИНА ПЕТЛИ", "Lср", "=H107/H19", "м", "f/b — целевой выход", None, NUM2, formula=True)
-param(109, 14, "Расход на одну петлю (проектный)", "Gп", "=3600*H62*H23", "м³/ч", "vпр·ω·3600", None, NUM3, formula=True)
-param(110, 15, "Общий расход (проектный)", "Gv", "=H106*H109", "м³/ч", "i·Gп", None, NUM3, formula=True)
-param(111, 16, "Перепад в фактической петле", "Δtф", "=H98*H107/(H62*H23*H37*H38)", "К", "n1·f/(vпр·ω·ρж·cж)", None, NUM2, formula=True)
-param(112, 17, "Обратная температура (проектная)", "tобр", "=H11-H111", "°C", "", None, NUM2, formula=True)
-put(113, 3, " Средняя температура (проектная, контроль) ")
-ws.cell(row=113, column=6, value="tсрп")
-ws.cell(row=113, column=8, value="=(H11+H112)/2").number_format = NUM2
-ws.cell(row=113, column=10, value="°C")
-ws.cell(row=113, column=12, value="ср. от проектного расхода — сравнить с проходом 3")
+section(84, "6. ПЕТЛИ И РАСХОД (шаги 8–19)")
+param(85, 1, "Средняя температура теплоносителя", "tср", "=H78", "°C", "из прохода 3", None, NUM2, formula=True)
+param(86, 2, "КПД", "η", "=H79", "—", "", None, "0.0000", formula=True)
+param(87, 3, "Удельная мощность", "n1", "=H80", "кВт/м²", "", None, NUM3, formula=True)
+param(88, 4, "Суммарная мощность", "N1", "=H13*H87", "кВт", "n1·Fст", None, NUM3, formula=True)
+param(89, 5, "Минимальная температура в петле", "tмин", "=H81", "°C", "нижний предел теплоносителя", None, NUM2, formula=True)
+param(90, 6, "Допустимый перепад по петле", "tдоп", "=H11-H89", "К", "tпод − tмин (коллектор рядом с петлями)", None, NUM2, formula=True)
+param(91, 7, "Падение температуры на 1 м трубы", "Δt", "=H87*H19/(H50*H23*H37*H38)", "К/м", "b·n1/(vпр·ω·ρж·cж)", None, NUM3, formula=True)
+param(92, 8, "Падение температуры на 1 м² поверхности", "t1", "=H91/H19", "К/м²", "Δt/b", None, NUM3, formula=True)
+param(93, 9, "Максимальная площадь петли", "fст", "=H90/H92", "м²", "tдоп/t1", None, NUM2, formula=True)
+param(94, 10, "Максимальная длина петли", "Lмакс", "=H93/H19", "м", "fст/b", None, NUM2, formula=True)
+param(95, 11, "Количество петель", "i", "=ROUNDUP(H13/H93,0)", "шт", "ROUNDUP(Fст/fст)", None, "0", formula=True)
+param(96, 12, "Фактическая площадь петли", "f", "=H13/H95", "м²", "Fст/i", None, NUM2, formula=True)
+param(97, 13, "СРЕДНЯЯ ДЛИНА ПЕТЛИ", "Lср", "=H96/H19", "м", "f/b — целевой выход", None, NUM2, formula=True)
+param(98, 14, "Расход на одну петлю (проектный)", "Gп", "=3600*H50*H23", "м³/ч", "vпр·ω·3600", None, NUM3, formula=True)
+param(99, 15, "Общий расход (проектный)", "Gv", "=H95*H98", "м³/ч", "i·Gп", None, NUM3, formula=True)
+param(100, 16, "Перепад в фактической петле", "Δtф", "=H87*H96/(H50*H23*H37*H38)", "К", "n1·f/(vпр·ω·ρж·cж)", None, NUM2, formula=True)
+param(101, 17, "Обратная температура (проектная)", "tобр", "=H11-H100", "°C", "", None, NUM2, formula=True)
+put(102, 3, " Средняя температура (проектная, контроль) ")
+ws.cell(row=102, column=6, value="tсрп")
+ws.cell(row=102, column=8, value="=(H11+H101)/2").number_format = NUM2
+ws.cell(row=102, column=10, value="°C")
+ws.cell(row=102, column=12, value="ср. от проектного расхода — сравнить с проходом 3")
 
 # ================= 7. РАБОЧАЯ ТОЧКА НАСОСА =================
-put(115, 2, "7. РАБОЧАЯ ТОЧКА НАСОСА")
+put(104, 2, "7. РАБОЧАЯ ТОЧКА НАСОСА")
 for col in range(2, 13):
-    ws.cell(row=115, column=col).fill = FILL_SEC
-    ws.cell(row=115, column=col).font = F_SECTION
-put(116, 3, "Схема: насос → подающий коллектор (без сопротивления) → петли → обратный коллектор → магистраль (пренебрежимо) → котёл. В расчёте — только потери по длине петли.", font=F_NOTE)
+    ws.cell(row=104, column=col).fill = FILL_SEC
+    ws.cell(row=104, column=col).font = F_SECTION
+put(105, 3, "Схема: насос → подающий коллектор (без сопротивления) → петли → обратный коллектор → магистраль (пренебрежимо) → котёл. В расчёте — только потери по длине петли.", font=F_NOTE)
 # заголовки секции/подписи — без переноса и с фиксированной высотой (иначе Excel раздувает строки)
 for r in (115, 116):
     ws.cell(row=r, column=3).alignment = Alignment(horizontal="left", vertical="center", wrap_text=False)
-ws.row_dimensions[115].height = 18
-ws.row_dimensions[116].height = 16
-ws.cell(row=115, column=2).alignment = Alignment(horizontal="left", vertical="center", wrap_text=False)
+ws.row_dimensions[104].height = 18
+ws.row_dimensions[105].height = 16
+ws.cell(row=104, column=2).alignment = Alignment(horizontal="left", vertical="center", wrap_text=False)
 
 CAT = "'Насосы-кривые'"
-knots = ['$C$122', '$D$122', '$E$122', '$F$122', '$G$122', '$H$122', '$I$122']   # x0..x6
-pvals = ['$C$123', '$D$123', '$E$123', '$F$123', '$G$123', '$H$123', '$I$123']   # h0..h6
+knots = ['$C$111', '$D$111', '$E$111', '$F$111', '$G$111', '$H$111', '$I$111']   # x0..x6
+pvals = ['$C$112', '$D$112', '$E$112', '$F$112', '$G$112', '$H$112', '$I$112']   # h0..h6
 
-put(120, 3, "Строка 122 — узлы каталожных точек Q, м³/ч;  строка 123 — напор H выбранного насоса, м:", font=F_BOLD)
-ws.cell(row=120, column=3).alignment = Alignment(horizontal="left", vertical="center", wrap_text=False)
-ws.row_dimensions[120].height = 16
+put(109, 3, "Строка 122 — узлы каталожных точек Q, м³/ч;  строка 123 — напор H выбранного насоса, м:", font=F_BOLD)
+ws.cell(row=109, column=3).alignment = Alignment(horizontal="left", vertical="center", wrap_text=False)
+ws.row_dimensions[109].height = 16
 for j, kx in enumerate([0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0]):
-    put(122, 3 + j, kx, font=F_BOLD, num="0.0", align=AL_C)
+    put(111, 3 + j, kx, font=F_BOLD, num="0.0", align=AL_C)
 for k in range(1, 8):
     f = "=INDEX({}!$B$4:$G$10,{},MATCH($H$15,{}!$B$3:$G$3,0))".format(CAT, k, CAT)
-    put(123, 2 + k, f, num="0.00", align=AL_C)
+    put(112, 2 + k, f, num="0.00", align=AL_C)
 
 # заголовок таблицы РТ — упрощённая схема: только потери по длине в петлях
 hdr = ["Q, м³/ч", "v петли, м/с", "ΔP длина петли, Па", "H сети, м", "H насоса, м", "Δ = Hнас − Hсети"]
-put(125, 3, "Таблица характеристик (Q — общий расход; схема: насос → коллектор → петли → магистраль → котёл, все узлы кроме петель — без сопротивления):", font=F_BOLD)
-ws.cell(row=125, column=3).alignment = Alignment(horizontal="left", vertical="center", wrap_text=False)
-ws.row_dimensions[125].height = 16
+put(114, 3, "Таблица характеристик (Q — общий расход; схема: насос → коллектор → петли → магистраль → котёл, все узлы кроме петель — без сопротивления):", font=F_BOLD)
+ws.cell(row=114, column=3).alignment = Alignment(horizontal="left", vertical="center", wrap_text=False)
+ws.row_dimensions[114].height = 16
 for j, h in enumerate(hdr):
-    put(126, 2 + j, h, font=F_BOLD, align=AL_C, border=True, fill=FILL_SEC)
-ws.row_dimensions[126].height = 30   # фиксируем: заголовки в 2 строки, без автоувеличения
+    put(115, 2 + j, h, font=F_BOLD, align=AL_C, border=True, fill=FILL_SEC)
+ws.row_dimensions[115].height = 30   # фиксируем: заголовки в 2 строки, без автоувеличения
 
-REF_I = "$H$106"     # количество петель
-REF_L = "$H$108"     # средняя длина петли
+REF_I = "$H$95"     # количество петель
+REF_L = "$H$97"     # средняя длина петли
 
 def pump_formula(q_cell):
     # кусочно-линейная интерполяция каталожной кривой выбранного насоса
@@ -292,7 +278,7 @@ def pump_formula(q_cell):
     s += "0" + ")" * 6
     return s
 
-r0 = 127   # первая строка сетки
+r0 = 116   # первая строка сетки
 NQ = 25    # 0 .. 3.0 шаг 0.125
 for idx in range(NQ):
     r = r0 + idx
@@ -307,84 +293,84 @@ for idx in range(NQ):
 
 r_last = r0 + NQ - 1   # 151
 
-put(153, 3, "Строк с Δ<0 (диагностика)")
-ws.cell(row=153, column=8, value='=COUNTIF(G127:G151,"<0")').number_format = "0"
+put(142, 3, "Строк с Δ<0 (диагностика)")
+ws.cell(row=142, column=8, value='=COUNTIF(G116:G140,"<0")').number_format = "0"
 
 # рабочая точка
-rng_Q  = "$B$127:$B$151"
-rng_D  = "$G$127:$G$151"   # Δ
-rng_E  = "$E$127:$E$151"   # H сети
-rng_F  = "$F$127:$F$151"   # H насоса
+rng_Q  = "$B$116:$B$140"
+rng_D  = "$G$116:$G$140"   # Δ
+rng_E  = "$E$116:$E$140"   # H сети
+rng_F  = "$F$116:$F$140"   # H насоса
 
-put(154, 3, "РАСХОД рабочей точки")
-put(154, 12, "первая Δ<0: строка 25−n; интерполяция между последней Δ≥0 и первой Δ<0", font=F_NOTE)
-ws.cell(row=154, column=8).value = ('=IFERROR(IF($H$153=0,"пересечение не найдено — выберите другой насос",'
-    'INDEX({Q},25-$H$153)+INDEX({D},25-$H$153)*(INDEX({Q},26-$H$153)-INDEX({Q},25-$H$153))/(INDEX({D},25-$H$153)-INDEX({D},26-$H$153))),"—")').format(Q=rng_Q, D=rng_D)
-ws.cell(row=154, column=8).number_format = NUM3
-ws.cell(row=154, column=8).font = F_RES
-ws.cell(row=154, column=8).fill = FILL_RES
-ws.cell(row=154, column=8).border = B_ALL
-ws.cell(row=154, column=10, value="м³/ч")
+put(143, 3, "РАСХОД рабочей точки")
+put(143, 12, "первая Δ<0: строка 25−n; интерполяция между последней Δ≥0 и первой Δ<0", font=F_NOTE)
+ws.cell(row=143, column=8).value = ('=IFERROR(IF($H$142=0,"пересечение не найдено — выберите другой насос",'
+    'INDEX({Q},25-$H$142)+INDEX({D},25-$H$142)*(INDEX({Q},26-$H$142)-INDEX({Q},25-$H$142))/(INDEX({D},25-$H$142)-INDEX({D},26-$H$142))),"—")').format(Q=rng_Q, D=rng_D)
+ws.cell(row=143, column=8).number_format = NUM3
+ws.cell(row=143, column=8).font = F_RES
+ws.cell(row=143, column=8).fill = FILL_RES
+ws.cell(row=143, column=8).border = B_ALL
+ws.cell(row=143, column=10, value="м³/ч")
 
-put(155, 3, "НАПОР рабочей точки (насос)")
-ws.cell(row=155, column=8).value = ('=IFERROR(INDEX({F},25-$H$153)+(INDEX({F},26-$H$153)-INDEX({F},25-$H$153))*($H$154-INDEX({Q},25-$H$153))/(INDEX({Q},26-$H$153)-INDEX({Q},25-$H$153)),"—")').format(F=rng_F, Q=rng_Q)
-ws.cell(row=155, column=8).number_format = NUM2
-ws.cell(row=155, column=8).font = F_RES
-ws.cell(row=155, column=8).fill = FILL_RES
-ws.cell(row=155, column=8).border = B_ALL
-ws.cell(row=155, column=10, value="м")
+put(144, 3, "НАПОР рабочей точки (насос)")
+ws.cell(row=144, column=8).value = ('=IFERROR(INDEX({F},25-$H$142)+(INDEX({F},26-$H$142)-INDEX({F},25-$H$142))*($H$143-INDEX({Q},25-$H$142))/(INDEX({Q},26-$H$142)-INDEX({Q},25-$H$142)),"—")').format(F=rng_F, Q=rng_Q)
+ws.cell(row=144, column=8).number_format = NUM2
+ws.cell(row=144, column=8).font = F_RES
+ws.cell(row=144, column=8).fill = FILL_RES
+ws.cell(row=144, column=8).border = B_ALL
+ws.cell(row=144, column=10, value="м")
 
-put(156, 3, "Напор сети в рабочей точке (контроль)")
-ws.cell(row=156, column=8).value = ('=IFERROR(INDEX({E},25-$H$153)+(INDEX({E},26-$H$153)-INDEX({E},25-$H$153))*($H$154-INDEX({Q},25-$H$153))/(INDEX({Q},26-$H$153)-INDEX({Q},25-$H$153)),"—")').format(E=rng_E, Q=rng_Q)
-ws.cell(row=156, column=8).number_format = NUM2
-ws.cell(row=156, column=10, value="м (≈ H насоса)")
+put(145, 3, "Напор сети в рабочей точке (контроль)")
+ws.cell(row=145, column=8).value = ('=IFERROR(INDEX({E},25-$H$142)+(INDEX({E},26-$H$142)-INDEX({E},25-$H$142))*($H$143-INDEX({Q},25-$H$142))/(INDEX({Q},26-$H$142)-INDEX({Q},25-$H$142)),"—")').format(E=rng_E, Q=rng_Q)
+ws.cell(row=145, column=8).number_format = NUM2
+ws.cell(row=145, column=10, value="м (≈ H насоса)")
 
-put(157, 3, "Скорость в петле (фактическая по РТ)")
-ws.cell(row=157, column=8).value = '=IFERROR($H$154/($H$106*3600*$H$23),"—")'
-ws.cell(row=157, column=8).number_format = NUM3
-ws.cell(row=157, column=10, value="м/с")
+put(146, 3, "Скорость в петле (фактическая по РТ)")
+ws.cell(row=146, column=8).value = '=IFERROR($H$143/($H$95*3600*$H$23),"—")'
+ws.cell(row=146, column=8).number_format = NUM3
+ws.cell(row=146, column=10, value="м/с")
 
-put(158, 3, "Перепад в петле при РТ")
-ws.cell(row=158, column=8).value = '=IFERROR($H$98*$H$107/($H$157*$H$23*$H$37*$H$38),"—")'
-ws.cell(row=158, column=8).number_format = NUM2
-ws.cell(row=158, column=10, value="К")
+put(147, 3, "Перепад в петле при РТ")
+ws.cell(row=147, column=8).value = '=IFERROR($H$87*$H$96/($H$146*$H$23*$H$37*$H$38),"—")'
+ws.cell(row=147, column=8).number_format = NUM2
+ws.cell(row=147, column=10, value="К")
 
-put(159, 3, "Обратная температура при РТ")
-ws.cell(row=159, column=8).value = '=IFERROR($H$11-$H$158,"—")'
-ws.cell(row=159, column=8).number_format = NUM2
-ws.cell(row=159, column=10, value="°C")
+put(148, 3, "Обратная температура при РТ")
+ws.cell(row=148, column=8).value = '=IFERROR($H$11-$H$147,"—")'
+ws.cell(row=148, column=8).number_format = NUM2
+ws.cell(row=148, column=10, value="°C")
 
-put(160, 3, "Средняя температура при РТ")
-ws.cell(row=160, column=8).value = '=IFERROR(($H$11+$H$159)/2,"—")'
-ws.cell(row=160, column=8).number_format = NUM2
-ws.cell(row=160, column=10, value="°C")
+put(149, 3, "Средняя температура при РТ")
+ws.cell(row=149, column=8).value = '=IFERROR(($H$11+$H$148)/2,"—")'
+ws.cell(row=149, column=8).number_format = NUM2
+ws.cell(row=149, column=10, value="°C")
 
-put(161, 3, "КПД при РТ")
-ws.cell(row=161, column=8).value = '=IFERROR(' + eta_formula("H160")[1:] + ',"—")'
-ws.cell(row=161, column=8).number_format = "0.0000"
+put(150, 3, "КПД при РТ")
+ws.cell(row=150, column=8).value = '=IFERROR(' + eta_formula("H149")[1:] + ',"—")'
+ws.cell(row=150, column=8).number_format = "0.0000"
 
-put(162, 3, "Удельная мощность при РТ")
-ws.cell(row=162, column=8).value = '=IFERROR($H$72/($H$161*$H$14*60),"—")'
-ws.cell(row=162, column=8).number_format = NUM3
-ws.cell(row=162, column=10, value="кВт/м²")
+put(151, 3, "Удельная мощность при РТ")
+ws.cell(row=151, column=8).value = '=IFERROR($H$61/($H$150*$H$14*60),"—")'
+ws.cell(row=151, column=8).number_format = NUM3
+ws.cell(row=151, column=10, value="кВт/м²")
 
-put(163, 3, "Мощность системы при РТ")
-ws.cell(row=163, column=8).value = '=IFERROR($H$162*$H$13,"—")'
-ws.cell(row=163, column=8).number_format = NUM2
-ws.cell(row=163, column=10, value="кВт")
+put(152, 3, "Мощность системы при РТ")
+ws.cell(row=152, column=8).value = '=IFERROR($H$151*$H$13,"—")'
+ws.cell(row=152, column=8).number_format = NUM2
+ws.cell(row=152, column=10, value="кВт")
 
-put(164, 3, "Статус скорости в петле")
-ws.cell(row=164, column=8).value = ('=IF(ISNUMBER($H$157),IF(AND($H$157>=0.2,$H$157<=0.5),"OK","ВНИМАНИЕ: вне диапазона 0,2–0,5 м/с"),"—")')
+put(153, 3, "Статус скорости в петле")
+ws.cell(row=153, column=8).value = ('=IF(ISNUMBER($H$146),IF(AND($H$146>=0.2,$H$146<=0.5),"OK","ВНИМАНИЕ: вне диапазона 0,2–0,5 м/с"),"—")')
 
 # ================= 8. ИТОГ =================
-section(166, "8. ИТОГ")
-param(167, 1, "СРЕДНЯЯ ДЛИНА ПЕТЛИ", "Lср", "=H108", "м", "целевой выход № 2", None, NUM2, formula=True)
-param(168, 2, "Количество петель", "i", "=H106", "шт", "", None, "0", formula=True)
-param(169, 3, "РАСХОД рабочей точки", "Gрт", "=H154", "м³/ч", "целевой выход № 1", None, NUM3, formula=True)
-param(170, 4, "НАПОР рабочей точки", "Hрт", "=H155", "м", "", None, NUM2, formula=True)
-param(171, 5, "Скорость в петле при РТ", "v", "=H157", "м/с", "норма 0,2–0,5", None, NUM3, formula=True)
-param(172, 6, "Мощность системы при РТ", "N1", "=H163", "кВт", "", None, NUM2, formula=True)
-param(173, 7, "Статус скорости", "", "=H164", "", "", None, None, formula=True)
+section(155, "8. ИТОГ")
+param(156, 1, "СРЕДНЯЯ ДЛИНА ПЕТЛИ", "Lср", "=H97", "м", "целевой выход № 2", None, NUM2, formula=True)
+param(157, 2, "Количество петель", "i", "=H95", "шт", "", None, "0", formula=True)
+param(158, 3, "РАСХОД рабочей точки", "Gрт", "=H143", "м³/ч", "целевой выход № 1", None, NUM3, formula=True)
+param(159, 4, "НАПОР рабочей точки", "Hрт", "=H144", "м", "", None, NUM2, formula=True)
+param(160, 5, "Скорость в петле при РТ", "v", "=H146", "м/с", "норма 0,2–0,5", None, NUM3, formula=True)
+param(161, 6, "Мощность системы при РТ", "N1", "=H152", "кВт", "", None, NUM2, formula=True)
+param(162, 7, "Статус скорости", "", "=H153", "", "", None, None, formula=True)
 
 # ================= ЛИСТ «Насосы-кривые» =================
 wsc = wb.create_sheet("Насосы-кривые")
@@ -451,8 +437,8 @@ lines = [
     ("6. Гидравлика рабочей точки (УПРОЩЕННАЯ СХЕМА): насос → подающий коллектор (без сопротивления) → петли →", None),
     ("   обратный коллектор → магистральная труба (пренебрежимо мала) → котёл (без сопротивления).", None),
     ("   Учитываются ТОЛЬКО потери по длине петли: R = 3,2·10⁴·v^1,79/d^1,29 (Па/м, d в мм), с коэффициентом антифриза kА.", None),
-    ("   Местные сопротивления (краны, фильтр, повороты, трёхходовик) и запас 1,2 — зарезервированы в константах,", None),
-    ("   в расчёт РТ не входят (легко включить обратно).", None),
+    ("   Местные сопротивления (краны, фильтр, повороты, трёхходовик), магистраль и запас 1,2 ИСКЛЮЧЕНЫ из файла", None),
+    ("   (решение 06.11.2026); константы kvs/ζ не хранятся.", None),
     ("7. КОНВЕКЦИЯ ПРИВЯЗАНА К ВЕТРУ (вариант 2): Qкон = 3600·αн·(0−tв)/1000, где αн = 8,7 + 2,6·vн —", None),
     ("   тот же коэффициент, что и в Rв. Коэф. 0,5 исходника (1800 вместо 3600) отброшен.", None),
     ("   Рост ветра теперь честно увеличивает потери: n1↑, tмин↑, допустимая длина петли ↓.", None),
